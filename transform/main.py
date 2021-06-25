@@ -6,7 +6,8 @@ import pandas as pd
 import hashlib
 import nltk
 from nltk.corpus import stopwords
-nltk.data.path.append('./nltk_data')
+nltk.data.path.append('../nltk_data')
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,7 @@ def main(filename):
     df = _remove_news_lines_from_body(df)
     df = _tokenize_column(df, 'title')
     df = _tokenize_column(df, 'body')
-    df = _remove_duplicate_entries(df, 'title')
+    df = _remove_duplicate_entries(df, 'url')
     df = _drop_rows_with_missing_values(df)
     _save_data(df,filename)
             
@@ -31,7 +32,7 @@ def main(filename):
 def _read_data(filename):
     logger.info('Reading file {}'.format(filename))
 
-    return pd.read_csv(filename)
+    return pd.read_csv('../data_tmp/{}'.format(filename))
 
 def _extract_newspapper_uid(filename):
     logger.info('Extracting newspaper uid')
@@ -70,9 +71,10 @@ def _fill_missing_titles(df):
 
 
 def _generate_uids_for_rows(df):
+    today = datetime.now().strftime('%Y_%m_%d_%H%m%s')
     logger.info('Generating uids for each row')
     uids =  (df
-                .apply(lambda row: hashlib.md5(bytes(row['url'].encode())), axis=1)
+                .apply(lambda row: hashlib.md5(bytes((row['url']+today).encode())), axis=1)
                 .apply(lambda hash_object: hash_object.hexdigest())
             )
     df['uid'] = uids
@@ -123,7 +125,7 @@ def _drop_rows_with_missing_values(df):
 def _save_data(df, filename):
     clean_filename = 'clean_{}'.format(filename) #prefix clean
     logger.info('Saving data at location {}'.format(filename))
-    df.to_csv(clean_filename)
+    df.to_csv('../data_tmp/{}'.format(clean_filename))
     
     
 if __name__ == '__main__':

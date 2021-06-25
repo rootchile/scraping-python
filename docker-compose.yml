@@ -1,0 +1,14 @@
+version: '3'
+services:
+  postgresql:
+    image: postgres:12
+    restart: always
+    container_name: scraping-postgresql
+    volumes:
+      - ./data_postgresql/:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_DB=scraping
+      - POSTGRES_USER=db_user
+      - POSTGRES_PASSWORD=db_pass

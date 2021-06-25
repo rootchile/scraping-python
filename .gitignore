@@ -1,5 +1,10 @@
 debugger_scrapping.py
 .vscode
 pyvenv.cfg
+.DS_Store
 venv
-__pycache__
+__pycache_
+data_tmp/*.csv
+data_postgresql/
+extract/__pycache__/
+load/__pycache__/

@@ -7,11 +7,12 @@ from base import Base, engine, Session
 
 logger = logging.getLogger(__name__)
 
+
 def main(filename):
     Base.metadata.create_all(engine) # generar schema
     session = Session()
     
-    articles = pd.read_csv(filename)
+    articles = pd.read_csv('../data_tmp/{}'.format(filename))
     
     for index, row in articles.iterrows():
         logging.info('Loading article uid {} into DB'.format(row['uid']))

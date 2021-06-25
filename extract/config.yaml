@@ -1,19 +1,36 @@
 news_sites:
-  eluniversal:
-    url: http://www.eluniversal.com.mx
+  dfhome:
+    url: https://www.df.cl
+    url_regex: ^https?://.+/.+$
+    url_base: https://www.df.cl
     queries:
-      homepage_article_links: '.field-content a'
-      article_body: '.field-name-body'
-      article_title: '.pane-content h1'
-  elpais:
-    url: https://elpais.com
+      homepage_article_links: 'h2.titular a'
+      article_body: '.bajada'
+      article_title: '.titular'
+
+  dfempresas:
+    url: https://www.df.cl/empresas
+    url_regex: ^https?://.+/.+/.+$
+    url_base: https://www.df.cl
     queries:
-      homepage_article_links: '.articulo-titulo a'
-      article_body: '.articulo-cuerpo'
-      article_title: '.articulo-titulo' 
-  washingtonpost:
-    url: https://www.washingtonpost.com
+      homepage_article_links: '.noticia-horizontal a'
+      article_body: '.bajada'
+      article_title: '.titular'
+
+  dfeconomia:
+    url: https://www.df.cl/economia_y_politica
+    url_regex: ^https?://.+/.+/.+$
+    url_base: https://www.df.cl
     queries:
-      homepage_article_links: '.headline a'
-      article_body: '.topper-headline h1'
-      article_title: 'article.paywall'
+      homepage_article_links: '.noticia-horizontal a'
+      article_body: '.bajada'
+      article_title: '.titular'
+
+  dfmercados:
+    url: https://www.df.cl/mercados
+    url_regex: ^https?://.+/.+/.+$
+    url_base: https://www.df.cl
+    queries:
+      homepage_article_links: '.noticia-horizontal a'
+      article_body: '.bajada'
+      article_title: '.titular'

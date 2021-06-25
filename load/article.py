@@ -11,7 +11,7 @@ class Article(Base):
     newspaper = Column(String)
     n_tokens_body = Column(Integer)
     n_tokens_title = Column(Integer)
-    url = Column(String, unique=True)
+    url = Column(String) # unique=True
     
     def __init__(self, uid, body, host, newspaper_uid, n_tokens_body, n_tokens_title, title, url):
         self.id = uid

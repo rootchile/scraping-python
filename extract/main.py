@@ -12,30 +12,32 @@ import csv
 import news_page_objects as news
 
 logger = logging.getLogger(__name__)
-is_well_formed_link = re.compile(r'^https?://.+/.+$') #https://example.com/hello
 is_root_path = re.compile(r'^/.+$') # /some-page
 
 
 def _news_scraper(news_site_uid):
-    host = config()['news_sites'][news_site_uid]['url']
+    host = config()['news_sites'][news_site_uid]['url_base']
+    regex = config()['news_sites'][news_site_uid]['url_regex']
     logging.info('Beginning scraper for {}'.format(host))
     homepage = news.HomePage(news_site_uid,host)
 
     articles = []
     for link in homepage.article_links:
-        article = _fetch_article(news_site_uid, host, link)
+        article = _fetch_article(news_site_uid, host, link, regex)
         
         if article:
             logging.info('Article fetched: {}'.format(article.title))
             articles.append(article)
-            
-    _save_articles(news_site_uid, articles)
     
+    if len(articles)>0:
+        _save_articles(news_site_uid, articles)
+    return articles
+
 def _save_articles(news_site_uid, articles):
     now = datetime.now().strftime('%Y_%m_%d')
-    # out_file_name = '{news_site_uid}_{datetime}_articles.csv'.format(
+    # out_file_name = './data_tmp/{news_site_uid}_{datetime}_articles.csv'.format(
     #                 news_site_uid=news_site_uid, datetime=now)
-    out_file_name = '{}.csv'.format(news_site_uid)
+    out_file_name = '../data_tmp/{}.csv'.format(news_site_uid)
     ## todas las properties del objeto
     csv_headers = list(filter(lambda property: not property.startswith('_'), dir(articles[0])))
     
@@ -47,16 +49,15 @@ def _save_articles(news_site_uid, articles):
             row = [str(getattr(article, prop)) for prop in csv_headers]
             writer.writerow(row)
                     
-def _fetch_article(news_site_uid, host, link):
+def _fetch_article(news_site_uid, host, link, regex):
     logger.info('Start fetching article at {}'.format(link))
     
     article = None
     
     try:
-        article = news.ArticlePage(news_site_uid, _build_link(host, link))
-    
+        article = news.ArticlePage(news_site_uid, _build_link(host, link, regex))
     except (HTTPError, MaxRetryError) as e:
-        logger.warning('Error while fetching the article',exc_info=False)
+        logger.warning('Error while fetching the article {}'.format(_build_link(host, link, regex)),exc_info=False)
      
     if article and not article.body:
         logger.warning('Invalid article. There is not body')
@@ -65,7 +66,10 @@ def _fetch_article(news_site_uid, host, link):
     return article
         
         
-def _build_link(host, link):
+def _build_link(host, link, regex):
+    is_well_formed_link = re.compile(regex)
+
+    link = link.strip()
     if is_well_formed_link.match(link):
         return link
     elif is_root_path.match(link):
